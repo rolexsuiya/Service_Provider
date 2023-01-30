@@ -1,4 +1,3 @@
-import { padding } from "@mui/system";
 
 export const AppStyle = {
   appBox: {
@@ -41,4 +40,8 @@ export const AppStyle = {
     paddingLeft:"10px"
     // marginTop:"10px"
   },
+  Logouticon:{
+    fontSize: "12px",
+    paddingRight:"20px"
+  }
 };

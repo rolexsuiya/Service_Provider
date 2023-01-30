@@ -9,6 +9,7 @@
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
+    "axios": "^1.2.3",
     "dayjs": "^1.11.6",
     "material-ui-phone-number": "^3.0.0",
     "mui-tel-input": "^3.0.2",

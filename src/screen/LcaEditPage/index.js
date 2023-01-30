@@ -9,226 +9,218 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import MuiPhoneNumber from "material-ui-phone-number";
+import axios from "axios";
+import { MuiTelInput } from "mui-tel-input";
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import uuid from "react-uuid";
 import { SelectAuto } from "../../Components/autoComplete";
 import TextFieldCom from "../../Components/textField";
 import { useToastContext } from "../../context/toastContext";
-import { addUser, editUser } from "../../redux/userSlice";
 import { appRoutes } from "../../router/routes";
 import { CreatePropertyStyle } from "./style";
 
 export default function LcaEditPage() {
-  const dispatch = useDispatch();
+  const users = useSelector((store) => store.users);
 
-  const [value, setValue] = useState(
-    "Description is the pattern of narrative development that aims to make vivid a place, object, character, or group. Description is one of four rhetorical modes, along with exposition, argumentation, and narration."
-  );
   const toastContext = useToastContext();
-  const [error, setError] = useState({
-    company: "",
-    catagory: "",
-    Name: "",
-    code: "",
-    doorNum: "",
-    addOne: "",
-    addTwo: "",
-    landMark: "",
-    area: "",
-    city: "",
-    stateIn: "",
-    country: "",
-    pinCode: "",
-    telePhone: "",
-    mobile: "",
-    email: "",
-  });
-  const [data, setData] = useState({
-    company: "",
-    catagory: "",
-    Name: "",
-    code: "",
-    doorNum: "",
-    addOne: "",
-    addTwo: "",
-    landMark: "",
-    area: "",
-    city: "",
-    stateIn: "",
-    country: "",
-    pinCode: "",
-    telePhone: "",
-    mobile: "",
-    email: "",
-    id: "",
-  });
+
+  const [data, setData] = useState({ ...users.userDetails });
+
+  const handleRomve = () => {
+    setData({ ...data, images: "" });
+  };
+
+  const handeleImages = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertBase64(file);
+    setData({ ...data, images: base64 });
+  };
+
+  //  Image convert to base64 function
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+  // end
+
+  const onChange = (e) => {
+    setData({ ...data, description: e });
+  };
 
   const handeleChange = (key, value) => {
     debugger;
+    const copyState = JSON.parse(JSON.stringify(data));
     if (key === "doorNum") {
       const re = /^[0-9\b]+$/;
       if (value === "" || re.test(value)) {
-        const erro = error;
-        erro[key] = "";
-        setError({ ...error, erro });
-        setData({ ...data, [key]: value === undefined ? "" : value });
+        copyState["error"][key] = "";
+        copyState[key] = value === undefined ? "" : value;
+        setData({
+          ...copyState,
+        });
       }
     } else {
-      const erro = error;
-      erro[key] = "";
-      setError({ ...error, erro });
-      setData({ ...data, [key]: value === undefined ? "" : value });
+      copyState["error"][key] = "";
+      copyState[key] = value === undefined ? "" : value;
+      setData({
+        ...copyState,
+      });
     }
   };
 
+  // form validation
   const validateForm = () => {
+    debugger;
     var isValid = true;
+    const copyState = JSON.parse(JSON.stringify(data));
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    const erro = error;
-    if (data?.company?.length === 0 || data?.company === null) {
+    if (copyState?.company?.length === 0 || copyState?.company === null) {
       isValid = false;
-      toastContext("error", "Please Fill in all the Highlighted Fields");
-      erro["company"] = true;
+      copyState.error["company"] = true;
     }
-    if (data?.catagory?.length === 0 || data?.catagory === null) {
+    if (copyState?.catagory?.length === 0 || copyState?.catagory === null) {
       isValid = false;
-      erro["catagory"] = true;
+      copyState.error["catagory"] = true;
     }
-    if (data?.Name?.length === 0) {
+    if (copyState?.Name?.length === 0) {
       isValid = false;
-      erro["Name"] = true;
+      copyState.error["Name"] = true;
     }
-    if (data?.code?.length === 0) {
+    if (copyState?.code?.length === 0) {
       isValid = false;
-      erro["code"] = true;
+      copyState.error["code"] = true;
     }
-    if (data?.doorNum?.length === 0) {
+    if (copyState?.doorNum?.length === 0) {
       isValid = false;
-      erro["doorNum"] = true;
+      copyState.error["doorNum"] = true;
     }
-    if (data?.addOne?.length === 0) {
+    if (copyState?.addOne?.length === 0) {
       isValid = false;
-      erro["addOne"] = true;
+      copyState.error["addOne"] = true;
     }
-    if (data?.addTwo?.length === 0) {
+    if (copyState?.addTwo?.length === 0) {
       isValid = false;
-      erro["addTwo"] = true;
+      copyState.error["addTwo"] = true;
     }
-
-    if (data?.landMark?.length === 0) {
+    if (copyState?.landMark?.length === 0) {
       isValid = false;
-      erro["landMark"] = true;
+      copyState.error["landMark"] = true;
     }
-    if (data?.area?.length === 0) {
+    if (copyState?.area?.length === 0) {
       isValid = false;
-      erro["area"] = true;
+      copyState.error["area"] = true;
     }
-    if (data?.city?.length === 0) {
+    if (copyState?.city?.length === 0) {
       isValid = false;
-      erro["city"] = true;
+      copyState.error["city"] = true;
     }
-    if (data?.stateIn?.length === 0) {
+    if (copyState?.stateIn?.length === 0) {
       isValid = false;
-      erro["stateIn"] = true;
+      copyState.error["stateIn"] = true;
     }
-    if (data?.country?.length === 0) {
+    if (copyState?.country?.length === 0) {
       isValid = false;
-      erro["country"] = true;
+      copyState.error["country"] = true;
     }
-    if (data?.pinCode?.length === 0) {
+    if (copyState?.pinCode?.length === 0) {
       isValid = false;
-      erro["pinCode"] = true;
+      copyState.error["pinCode"] = true;
     }
-    if (data?.telePhone?.length === 0) {
+    if (copyState?.telePhone?.length === 0) {
       isValid = false;
-      erro["telePhone"] = true;
+      copyState.error["telePhone"] = true;
     }
-    if (data?.mobile?.length === 0) {
+    if (copyState?.mobile?.length === 0) {
       isValid = false;
-      erro["mobile"] = true;
+      copyState.error["mobile"] = true;
     }
-    if (data?.email?.length === 0) {
+    if (copyState?.email?.length === 0) {
       isValid = false;
-      erro["email"] = true;
+      copyState.error["email"] = true;
     }
-    if (data?.email && regexEmail.test(data?.email) === false) {
+    if (copyState?.email && regexEmail.test(copyState?.email) === false) {
       isValid = false;
-      erro["email"] = true;
-      erro.email = "Please Enter Valid Email";
+      copyState.error["email"] = true;
+      copyState.error.email = "Please Enter Valid Email";
     }
-    setError({
-      ...error,
-      erro,
+    setData({
+      ...copyState,
     });
     return isValid;
   };
+  // end
 
   let idStud = uuid();
   let navigate = useNavigate();
   let location = useLocation();
 
   useEffect(() => {
-    if (location?.state?.row?.id?.length > 0) {
-      setData(location?.state?.row);
-    }
-  }, [location?.state?.row?.id]);
+    setData({ ...users?.userDetails, ...users?.editUser });
+  }, []);
 
+  var payload = {
+    company: data?.company ?? "",
+    catagory: data?.catagory ?? "",
+    Name: data?.Name ?? "",
+    code: data?.code ?? "",
+    description: data?.description ?? "",
+    doorNum: data?.doorNum ?? "",
+    addOne: data?.addOne ?? "",
+    addTwo: data?.addTwo ?? "",
+    landMark: data?.landMark ?? "",
+    area: data?.area ?? "",
+    city: data?.city ?? "",
+    stateIn: data?.stateIn ?? "",
+    country: data?.country ?? "",
+    pinCode: data?.pinCode ?? "",
+    telePhone: data?.telePhone ?? "",
+    mobile: data?.mobile ?? "",
+    email: data?.email ?? "",
+    images: data?.images ?? "",
+  };
+
+  // submit button
   const handeleSumit = () => {
     if (validateForm()) {
+      // edit data
       if (data?.id) {
-        dispatch(
-          editUser({
-            id: data?.id ?? "",
-            company: data?.company ?? "",
-            catagory: data?.catagory ?? "",
-            Name: data?.Name ?? "",
-            code: data?.code ?? "",
-            doorNum: data?.doorNum ?? "",
-            addOne: data?.addOne ?? "",
-            addTwo: data?.addTwo ?? "",
-            landMark: data?.landMark ?? "",
-            area: data?.area ?? "",
-            city: data?.city ?? "",
-            stateIn: data?.stateIn ?? "",
-            country: data?.country ?? "",
-            pinCode: data?.pinCode ?? "",
-            telePhone: data?.telePhone ?? "",
-            mobile: data?.mobile ?? "",
-            email: data?.email ?? "",
-          })
+        payload["id"] = data?.id;
+        axios.put(
+          `https://63ce24f3d2e8c29a9bd15b2d.mockapi.io/registerForm/${data?.id}`,
+          payload
         );
+
         toastContext("success", "Succesfully Updated");
-      } else {
-        dispatch(
-          addUser({
-            id: idStud,
-            company: data?.company ?? "",
-            catagory: data?.catagory ?? "",
-            Name: data?.Name ?? "",
-            code: data?.code ?? "",
-            doorNum: data?.doorNum ?? "",
-            addOne: data?.addOne ?? "",
-            addTwo: data?.addTwo ?? "",
-            landMark: data?.landMark ?? "",
-            area: data?.area ?? "",
-            city: data?.city ?? "",
-            stateIn: data?.stateIn ?? "",
-            country: data?.country ?? "",
-            pinCode: data?.pinCode ?? "",
-            telePhone: data?.telePhone ?? "",
-            mobile: data?.mobile ?? "",
-            email: data?.email ?? "",
-          })
-        );
+      }
+      // add data
+      else {
+        axios
+          .post(
+            "https://63ce24f3d2e8c29a9bd15b2d.mockapi.io/registerForm",
+            payload
+          )
+          .then((res) => {});
         toastContext("success", "Succesfully Added");
       }
       navigate(appRoutes.lcaListPage);
+    } else {
+      toastContext("error", "Please Fill in all the mandatory Fields");
     }
+    // end
   };
 
   return (
@@ -263,17 +255,38 @@ export default function LcaEditPage() {
                 PROFILE PICTURE
               </Typography>
               <Card sx={CreatePropertyStyle.propertyimgSx}>
-                <img
-                  src={require("../../assets/images/propertyimg.png")}
-                  alt="propimg"
-                />
+                {data.images ? (
+                  <img
+                    src={data?.images}
+                    alt="upload"
+                    style={{ marginLeft: "12px" }}
+                  />
+                ) : (
+                  <img src={require("../../assets/images/propertyimg.png")} />
+                )}
               </Card>
-              <Button sx={CreatePropertyStyle.uploadBtnSx}>Upload Image</Button>
+              <Button
+                component="label"
+                type="file"
+                sx={CreatePropertyStyle.uploadBtnSx}
+              >
+                Upload Image
+                <input
+                  onChange={handeleImages}
+                  name="file"
+                  hidden
+                  accept="image/*"
+                  multiple
+                  type="file"
+                />
+              </Button>
+
               <Typography
                 variant="h6"
                 component="h6"
                 sx={CreatePropertyStyle.typeRemove}
                 align="center"
+                onClick={handleRomve}
               >
                 Remove Image
               </Typography>
@@ -304,7 +317,7 @@ export default function LcaEditPage() {
                     value={data?.company ?? ""}
                     stateName="company"
                     sxa={CreatePropertyStyle.companyAuto}
-                    isValid={error?.company === true ? true : false}
+                    isValid={data?.error?.company ? true : false}
                     options={[
                       { label: "zoho", value: "zoho" },
                       { label: "amazon", value: "amazon" },
@@ -320,7 +333,6 @@ export default function LcaEditPage() {
                       </Typography>
                     </Typography>
                   </Box>
-
                   <SelectAuto
                     onSelectionChange={handeleChange}
                     stateName="catagory"
@@ -337,7 +349,7 @@ export default function LcaEditPage() {
                         value: "front end developer",
                       },
                     ]}
-                    isValid={error?.catagory ? true : false}
+                    isValid={data?.error?.catagory ? true : false}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -352,9 +364,9 @@ export default function LcaEditPage() {
                   <TextFieldCom
                     stateName="Name"
                     handleChange={handeleChange}
-                    placeholder="Enter Number"
+                    placeholder="Enter Name"
                     value={data?.Name ?? ""}
-                    isValid={error?.Name ? true : false}
+                    isValid={data?.error?.Name ? true : false}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -371,25 +383,23 @@ export default function LcaEditPage() {
                     handleChange={handeleChange}
                     placeholder="Enter Code"
                     value={data?.code ?? ""}
-                    isValid={error?.code ? true : false}
+                    isValid={data?.error?.code ? true : false}
                   />
                 </Grid>
               </Grid>
               <Typography sx={CreatePropertyStyle.labelSx}>
                 Description
               </Typography>
-
               <Box sx={CreatePropertyStyle.boxSx}>
                 <ReactQuill
                   sx={{ fontSize: "10px" }}
-                  value={value}
+                  value={data?.description ?? ""}
                   theme="snow"
-                  onChange={setValue}
+                  onChange={onChange}
                 />
               </Box>
             </Card>
           </Grid>
-
           <Card mt={3} sx={CreatePropertyStyle.cardSx1}>
             <Typography
               variant="h6"
@@ -411,10 +421,9 @@ export default function LcaEditPage() {
                 <TextFieldCom
                   stateName="doorNum"
                   handleChange={handeleChange}
-                  // type="number"
                   placeholder="Enter Number"
                   value={data?.doorNum ?? ""}
-                  isValid={error?.doorNum ? true : false}
+                  isValid={data?.error?.doorNum ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -431,7 +440,7 @@ export default function LcaEditPage() {
                   handleChange={handeleChange}
                   placeholder="address"
                   value={data?.addOne ?? ""}
-                  isValid={error?.addOne ? true : false}
+                  isValid={data?.error?.addOne ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -448,7 +457,7 @@ export default function LcaEditPage() {
                   handleChange={handeleChange}
                   placeholder="address"
                   value={data?.addTwo ?? ""}
-                  isValid={error?.addTwo ? true : false}
+                  isValid={data?.error?.addTwo ? true : false}
                 />
               </Grid>
 
@@ -466,7 +475,7 @@ export default function LcaEditPage() {
                   handleChange={handeleChange}
                   placeholder="Enter Landmark"
                   value={data?.landMark ?? ""}
-                  isValid={error?.landMark ? true : false}
+                  isValid={data?.error?.landMark ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -495,7 +504,7 @@ export default function LcaEditPage() {
                       value: "alapakkam",
                     },
                   ]}
-                  isValid={error?.area ? true : false}
+                  isValid={data?.error?.area ? true : false}
                 />
               </Grid>
 
@@ -524,7 +533,7 @@ export default function LcaEditPage() {
                       value: "Madurai",
                     },
                   ]}
-                  isValid={error?.city ? true : false}
+                  isValid={data?.error?.city ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -552,7 +561,7 @@ export default function LcaEditPage() {
                       value: "Kerala",
                     },
                   ]}
-                  isValid={error?.stateIn ? true : false}
+                  isValid={data?.error?.stateIn ? true : false}
                 />
               </Grid>
 
@@ -581,7 +590,7 @@ export default function LcaEditPage() {
                       value: "Australia",
                     },
                   ]}
-                  isValid={error?.country ? true : false}
+                  isValid={data?.error?.country ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -594,12 +603,12 @@ export default function LcaEditPage() {
                   </Typography>
                 </Box>
                 <TextFieldCom
-                  errorMsg={error?.pinCode}
+                  errorMsg={data?.error?.pinCode}
                   stateName="pinCode"
                   handleChange={handeleChange}
                   value={data?.pinCode ?? ""}
                   placeholder="Enter Pincode"
-                  isValid={error?.pinCode ? true : false}
+                  isValid={data?.error?.pinCode ? true : false}
                 />
               </Grid>
             </Grid>
@@ -625,13 +634,13 @@ export default function LcaEditPage() {
                   </Typography>
                 </Box>
 
-                <MuiPhoneNumber
+                <MuiTelInput
+                  defaultCountry="IN"
                   onChange={(e) => handeleChange("telePhone", e)}
                   sx={CreatePropertyStyle.phoneSx}
                   value={data?.telePhone ?? ""}
-                  defaultCountry={"in"}
-                  placeholder="hello"
-                  error={error?.telePhone ? true : false}
+                  placeholder="enter telephone number"
+                  error={data?.error?.telePhone ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4} lg={4}>
@@ -643,12 +652,13 @@ export default function LcaEditPage() {
                     </Typography>
                   </Typography>
                 </Box>
-                <MuiPhoneNumber
+
+                <MuiTelInput
+                  defaultCountry="IN"
                   onChange={(e) => handeleChange("mobile", e)}
                   sx={CreatePropertyStyle.phoneSx}
                   value={data?.mobile ?? ""}
-                  defaultCountry={"in"}
-                  error={error?.mobile ? true : false}
+                  error={data?.error?.mobile ? true : false}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4} lg={4}>
@@ -662,11 +672,11 @@ export default function LcaEditPage() {
                 </Box>
                 <TextFieldCom
                   stateName="email"
-                  errorMsg={error?.email}
+                  errorMsg={data?.error?.email}
                   value={data?.email ?? ""}
                   handleChange={handeleChange}
                   placeholder="example@gmail.com"
-                  isValid={error?.email ? true : false}
+                  isValid={data?.error?.email ? true : false}
                 />
               </Grid>
             </Grid>

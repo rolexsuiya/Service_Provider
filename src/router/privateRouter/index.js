@@ -15,6 +15,7 @@ const PrivateRouter = (props) => {
     console.log(token, "token");
 
     if (token === "true") {
+      debugger
       setShowComponent(true);
     } else {
       navigate(appRoutes.login);

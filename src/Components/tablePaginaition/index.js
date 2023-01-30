@@ -23,7 +23,7 @@ export default function TablePag(props) {
         container
       >
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Box sx={Appbar.BoxStart}
+          {/* <Box sx={Appbar.BoxStart}
             
 
           >
@@ -41,7 +41,7 @@ export default function TablePag(props) {
                 },
               }}
             />
-          </Box>
+          </Box> */}
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Box sx={Appbar.BoxEnd}
@@ -88,7 +88,6 @@ export default function TablePag(props) {
                   <Typography
                   
                     variant="subtitle1"
-                    // component={"span"}
                     key={index}
                   >
                     {" "}

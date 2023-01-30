@@ -1,28 +1,29 @@
-import { IconButton, Stack, Tab, Tabs, TextField, Typography } from "@mui/material";
+import { Button, IconButton, Stack } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import { AppStyle } from "./style";
-import { SelectAuto } from "../autoComplete/index";
-import TypographyText from "../typography";
+import React from "react";
+
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
 import { appRoutes } from "../../router/routes";
-
+import TypographyText from "../typography";
+import { AppStyle } from "./style";
+import { Logout } from "@mui/icons-material";
 const AppBarCom = () => {
 
   let navigate = useNavigate();
-  const [data, setData] = useState();
-  const handeleChange = (key, value) => {
-    setData({value})
-  };
+
+const logOut =()=>{
+  localStorage.clear();
+  navigate(appRoutes.login)
+}
 
   return (
     <>
       <Box position="static">
         <Box sx={AppStyle.appBox}>
         <Stack direction="row" sx={AppStyle.AppbarStyle}>
-        <IconButton onClick={() => navigate(appRoutes.login)} sx={AppStyle.NavIcon}>
+        <IconButton onClick={() => navigate(appRoutes.lcaEditPage)} sx={AppStyle.NavIcon}>
             <ChevronLeftIcon sx={AppStyle.LeftIcon} />
           </IconButton>
           <TypographyText
@@ -31,18 +32,8 @@ const AppBarCom = () => {
             title="Service Provider"
           />
           </Stack>
-          <SelectAuto
-            defaultValue={"Apartment"}
-            placeholder="Crayon'd"
-            sxa={AppStyle.textBar}
-            onSelectionChange={handeleChange}
-            value={data?.value}
-            options={[
-              { label: "Crayon'd", value: "Crayon'd" },
-              { label: "amazon", value: "amazon" },
-            ]}
-          ></SelectAuto>
-          {/* <TextField type={"number"} InputLabelProps={{ shrink: true }} /> */}
+          <Button sx={AppStyle.Logouticon} startIcon={<LogoutIcon/>} onClick={() => logOut()}>Logout</Button>
+          
         </Box>
       </Box>
     </>

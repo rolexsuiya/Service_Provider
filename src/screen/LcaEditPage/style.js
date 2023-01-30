@@ -66,6 +66,7 @@ height:"100%",
     fontWeight: "550",
     color: "#5c4edf",
     mt: "5px",
+    cursor:"pointer"
   },
   uploadBtnSx: {
     "&.MuiButton-root": {
@@ -79,6 +80,7 @@ height:"100%",
       font: " Nunito Sans ",
       fontSize: "11px",
       fontWeight: "bold",
+      
     },
   },
 
@@ -199,7 +201,7 @@ height:"100%",
     font: "Nunito Sans !important",
     fontSize: "11px",
     
-    color: "#979eac" + " !important",
+    color: "#979eac !important",
   },
   toggleBtnSx: {
     "& .MuiButtonBase-root.MuiToggleButton-root": {
@@ -226,7 +228,7 @@ height:"100%",
     // fontSize:"9px"
   },
   phoneSx:{
-    border: "1px solid #c4c4c4",
+    // border: "1px solid #c4c4c4",
                     width: "100%",
                     borderRadius: "3px",
                     marginTop: "5px",
@@ -237,11 +239,8 @@ height:"100%",
                     // },
                     "& .MuiInputBase-input":{
                       fontSize:"12px",
-                      padding:"8px"
+                      padding:"9px"
                       
-                    },
-                    "& .MuiInput-root:before": {
-                      borderBottom: "none",
                     }
                   
 

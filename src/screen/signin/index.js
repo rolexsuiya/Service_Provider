@@ -9,7 +9,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TypographyText from "../../Components/typography/index";
 import { useToastContext } from "../../context/toastContext";
@@ -19,6 +19,7 @@ import { SigninStyle } from "./style";
 export default function SignIn() {
   let navigate = useNavigate();
   const toastContext = useToastContext();
+  
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -27,6 +28,26 @@ export default function SignIn() {
       password: "",
     },
   });
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("validUser");
+
+  //   if (token === "true") {
+  //     debugger
+  //     setShowComponent(true);
+  //   } else {
+  //     navigate(appRoutes.login);
+  //   }
+  // }, [location]);
+
+  useLayoutEffect(() => {
+    debugger
+    const token = localStorage.getItem("validUser");
+
+    if (token === "true") {
+      navigate(appRoutes.lcaListPage)
+    }
+  }, []);
 
   const handeleChange = (key, value) => {
     const error = data?.error;

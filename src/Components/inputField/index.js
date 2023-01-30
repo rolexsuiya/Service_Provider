@@ -12,6 +12,7 @@ export default function InputText(props) {
     placeholder = "",
     startAdornment = "",
     type = "",
+    onChange
     // sxTextfield,labelSx
   } = props;
 
@@ -46,6 +47,7 @@ export default function InputText(props) {
         defaultValue={defaultValue}
         placeholder={placeholder}
         fullWidth={true}
+        onChange={onChange}
       ></TextField>
     </>
   );

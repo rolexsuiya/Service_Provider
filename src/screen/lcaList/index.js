@@ -1,7 +1,8 @@
 import SearchIcon from "@mui/icons-material/Search";
 import { Box, Button, Divider, Grid } from "@mui/material";
 import usePagination from "@mui/material/usePagination";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import filter from "../../assets/images/filter.svg";
@@ -10,13 +11,14 @@ import InputText from "../../Components/inputField";
 import TableCom from "../../Components/table";
 import TablePag from "../../Components/tablePaginaition";
 import { useToastContext } from "../../context/toastContext";
-import { deleteUser } from "../../redux/userSlice";
+import { addUser, editUser } from "../../redux/userSlice";
 import { appRoutes } from "../../router/routes";
 import { ListStyle } from "./style";
 
 const LcaListPage = () => {
   const users = useSelector((store) => store.users);
-  console.log(users, "useres");
+  const [search, setSearch] = useState("");
+
   let navigate = useNavigate();
   const toastContext = useToastContext();
 
@@ -69,20 +71,36 @@ const LcaListPage = () => {
   ];
   const [myPage, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleEdit = (row) => {
-    navigate(appRoutes.lcaEditPage, {
-      state: { row: row },
-    });
-  };
-
   const dispatch = useDispatch();
 
-  const handleDelete = (id) => {
-    dispatch(deleteUser({ id }));
-    toastContext("success", "Succesfully Deleted");
+  const handleEdit = (row) => {
+    dispatch(editUser(row));
+    navigate(appRoutes.lcaEditPage);
   };
 
+  const [load, setloading] = useState(false);
+
+  const getUsers = async () => {
+    const response = await axios.get(
+      "https://63ce24f3d2e8c29a9bd15b2d.mockapi.io/registerForm"
+    );
+    dispatch(addUser(response.data));
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const handleDelete = (id) => {
+    setloading(true);
+    axios
+      .delete(`https://63ce24f3d2e8c29a9bd15b2d.mockapi.io/registerForm/${id}`)
+      .then((res) => {
+        setloading(false);
+        getUsers();
+        toastContext("success", "Succesfully Deleted");
+      });
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -92,11 +110,20 @@ const LcaListPage = () => {
     setPage(0);
   };
 
+  const changeSearchData = (data) => {
+    return data?.filter((item) =>
+      item?.Name.toLowerCase().includes(search.toLowerCase())
+    );
+  };
+
   const { items } = usePagination({
-    count: Math.ceil(users?.length / rowsPerPage),
+    count: Math.ceil(
+      changeSearchData(users?.userData?.length > 0 ? users?.userData : [])
+        ?.length / rowsPerPage
+    ),
   });
   const nextBtn = () => {
-    if (myPage * rowsPerPage + rowsPerPage < users?.length) {
+    if (myPage * rowsPerPage + rowsPerPage < users?.userData?.length) {
       setPage((pre) => pre + 1);
     }
   };
@@ -105,6 +132,11 @@ const LcaListPage = () => {
     if (myPage > 0) {
       setPage((pre) => pre - 1);
     }
+  };
+
+  const onInputChange = (text) => {
+    setSearch(text);
+    setPage(0);
   };
 
   return (
@@ -117,9 +149,11 @@ const LcaListPage = () => {
               <Grid item xs={12} sm={6} md={6} lg={6}>
                 <Box sx={ListStyle.BoxStart}>
                   <InputText
-                    type="text"
-                    placeholder={"Search Service Properties"}
+                    type="search"
+                    placeholder={"Search Provider Name"}
                     font={"Nunito Sans"}
+                    value={search}
+                    onChange={(e) => onInputChange(e.target.value)}
                     startAdornment={<SearchIcon sx={ListStyle.SearchIcon} />}
                   />
                 </Box>
@@ -137,7 +171,10 @@ const LcaListPage = () => {
                     color="warning"
                     variant="contained"
                     sx={ListStyle.ButtonStyle}
-                    onClick={() => navigate(appRoutes.lcaEditPage)}
+                    onClick={() => {
+                      dispatch(editUser({}));
+                      navigate(appRoutes.lcaEditPage);
+                    }}
                   >
                     ADD NEW provider
                   </Button>
@@ -145,19 +182,24 @@ const LcaListPage = () => {
               </Grid>
             </Grid>
             <TableCom
-              table={users ?? []}
+              // table={search ? searchData : users?.userData}
+              table={changeSearchData(
+                users?.userData?.length > 0 ? users?.userData : []
+              )}
               myPage={myPage}
               rowsPerPage={rowsPerPage}
-              
               columnData={columnArray ?? []}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
+              load={load}
             />
             <TablePag
               items={items}
               rowsPerPage={rowsPerPage}
               myPage={myPage}
-              table={users}
+              table={changeSearchData(
+                users?.userData?.length > 0 ? users?.userData : []
+              )}
               handleChangePage={handleChangePage}
               handleChangeRowsPerPage={handleChangeRowsPerPage}
               setPage={setPage}
